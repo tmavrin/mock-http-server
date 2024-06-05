@@ -23,8 +23,8 @@ type handler struct {
 	Request  request         `json:"request"`
 }
 
-func handleGet(h handler) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func handleGet(h handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		prepError, ok := errorMap[fmt.Sprintf("%s_%s", h.Method, h.Path)]
 		if ok {
 			delete(errorMap, fmt.Sprintf("%s_%s", h.Method, h.Path))
@@ -36,11 +36,11 @@ func handleGet(h handler) http.HandlerFunc {
 			writeJSONResponse(w, http.StatusOK, h.Response)
 			return
 		}
-	}
+	})
 }
 
-func handlePost(h handler) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func handlePost(h handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		prepError, ok := errorMap[fmt.Sprintf("%s_%s", h.Method, h.Path)]
 		if ok {
 			delete(errorMap, fmt.Sprintf("%s_%s", h.Method, h.Path))
@@ -54,7 +54,7 @@ func handlePost(h handler) http.HandlerFunc {
 			return
 		}
 		writeJSONResponse(w, status, cmp.Or[any](data, h.Response))
-	}
+	})
 }
 
 func handleRequestBody(r *http.Request, h handler) (int, any, error) {

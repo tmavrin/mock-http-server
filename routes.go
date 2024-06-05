@@ -9,7 +9,7 @@ import (
 func parseRoutes(cfg config) *http.ServeMux {
 	router := http.NewServeMux()
 
-	router.HandleFunc(fmt.Sprintf("POST %s", cfg.PrepareErrorPath), prepareError)
+	router.Handle(fmt.Sprintf("POST %s", cfg.PrepareErrorPath), logMiddleware(prepareError()))
 
 	for _, h := range cfg.Handlers {
 		if !strings.HasPrefix(h.Path, "/") {
@@ -20,16 +20,16 @@ func parseRoutes(cfg config) *http.ServeMux {
 
 		switch h.Method {
 		case http.MethodPost:
-			router.HandleFunc(fmt.Sprintf("POST %s", h.Path), handlePost(h))
+			router.Handle(fmt.Sprintf("POST %s", h.Path), logMiddleware(handlePost(h)))
 
 		case http.MethodGet:
-			router.HandleFunc(fmt.Sprintf("GET %s", h.Path), handleGet(h))
+			router.Handle(fmt.Sprintf("GET %s", h.Path), logMiddleware(handleGet(h)))
 
 		case http.MethodPut:
-			router.HandleFunc(fmt.Sprintf("PUT %s", h.Path), handlePost(h))
+			router.Handle(fmt.Sprintf("PUT %s", h.Path), logMiddleware(handlePost(h)))
 
 		case http.MethodDelete:
-			router.HandleFunc(fmt.Sprintf("DELETE %s", h.Path), handleGet(h))
+			router.Handle(fmt.Sprintf("DELETE %s", h.Path), logMiddleware(handleGet(h)))
 		}
 	}
 

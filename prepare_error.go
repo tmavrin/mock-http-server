@@ -16,20 +16,22 @@ type preparedError struct {
 
 var errorMap map[string]preparedError = map[string]preparedError{}
 
-func prepareError(w http.ResponseWriter, r *http.Request) {
-	var prepError preparedError
+func prepareError() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var prepError preparedError
 
-	err := json.NewDecoder(r.Body).Decode(&prepError)
-	if err != nil {
-		writeJSONResponse(w, http.StatusInternalServerError, err.Error())
-		return
-	}
+		err := json.NewDecoder(r.Body).Decode(&prepError)
+		if err != nil {
+			writeJSONResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 
-	if !strings.HasPrefix(prepError.Path, "/") {
-		prepError.Path = "/" + prepError.Path
-	}
+		if !strings.HasPrefix(prepError.Path, "/") {
+			prepError.Path = "/" + prepError.Path
+		}
 
-	prepError.Method = strings.ToUpper(prepError.Method)
+		prepError.Method = strings.ToUpper(prepError.Method)
 
-	errorMap[fmt.Sprintf("%s_%s", prepError.Method, prepError.Path)] = prepError
+		errorMap[fmt.Sprintf("%s_%s", prepError.Method, prepError.Path)] = prepError
+	})
 }

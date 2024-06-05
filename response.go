@@ -2,7 +2,9 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"time"
 
 	"log"
 )
@@ -17,9 +19,14 @@ func writeJSONResponse(w http.ResponseWriter, statusCode int, data any) {
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
+
 		_, err = w.Write(b)
 		if err != nil {
 			log.Printf("writing response: %s\n", err)
 		}
+
+		l := fmt.Sprintf("[%s] response | %d | %s", time.Now().Format(time.RFC3339Nano), statusCode, string(b))
+
+		log.Println(l)
 	}
 }
