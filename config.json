@@ -1,0 +1,21 @@
+{
+  "prepareErrorPath": "/prepareError",
+  "handlers": [
+    {
+      "path": "/example-path",
+      "method": "POST",
+      "response": {
+        "info": { "success": true },
+        "data": "post validate request success data"
+      },
+      "request": {
+        "validate": {
+          "example": "required,lowercase,min=5"
+        },
+        "match": {
+          "example": "mock-request-body"
+        }
+      }
+    }
+  ]
+}
