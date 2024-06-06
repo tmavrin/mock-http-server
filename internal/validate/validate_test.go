@@ -95,7 +95,7 @@ func TestRequestBody(t *testing.T) {
 				Match: []byte(`{ "example": "mock-request-body" }`),
 			},
 
-			expectedError: `request does not match expected: expected: { "example": "mock-request-body" } , actual: { "example": "mock" }`,
+			expectedError: `request does not match expected: { "example": "mock-request-body" } , actual: { "example": "mock" }`,
 		},
 	}
 
