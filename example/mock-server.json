@@ -1,6 +1,13 @@
 {
-  "prepareErrorPath": "/prepareError",
+  "prepareErrorPath": "/prepare-error",
   "handlers": [
+    {
+      "path": "/",
+      "method": "GET",
+      "response": {
+          "msg": "Hello mock server!"
+      }
+    },
     {
       "path": "/example-path",
       "method": "POST",

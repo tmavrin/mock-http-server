@@ -1,0 +1,14 @@
+version: '3.5'
+
+services:
+  mock-server:
+    image: mock-http-server:local
+    restart: always
+    ports:
+      - "8080:8080"
+    networks:
+      - mock-server
+
+networks:
+  mock-server:
+    driver: bridge

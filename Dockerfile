@@ -1,14 +1,22 @@
-FROM golang:1.22-alpine AS build-env
-RUN apk --no-cache add git
-WORKDIR /go/src/github.com/tmavrin/mock-http-server/
-RUN ls
+FROM golang:1.22-alpine as builder
+
+RUN apk update && apk add --no-cache git ca-certificates tzdata 
+
 COPY . .
-RUN go build -o service
 
+RUN go mod download
 
-FROM alpine
-RUN apk update && apk add ca-certificates
-WORKDIR /app
-COPY ./config.json /app/
-COPY --from=build-env /go/src/github.com/tmavrin/mock-http-server/service /app/
-ENTRYPOINT /app/service
+RUN --mount=type=cache,target=/root/.cache/go-build \
+    CGO_ENABLED=0 go build -ldflags="-w -s" -o /mock-http-server ./cmd/main.go
+
+FROM scratch AS final
+
+COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+
+COPY ./example/mock-server.json /config/mock-server.json
+COPY --from=builder /mock-http-server /mock-http-server
+
+WORKDIR /
+
+ENTRYPOINT ["/mock-http-server"]

@@ -1,0 +1,44 @@
+run:
+  tests: false
+linters:
+  enable-all: true
+  disable:
+    # complexity
+    - gocognit
+    - gocyclo
+    - cyclop
+    - maintidx
+    # disabled
+    - godot
+    - depguard
+    - dupl
+    - ireturn
+    - varnamelen
+    - exhaustruct
+    - tagliatelle
+    - wrapcheck
+    - paralleltest
+    - funlen
+    - gochecknoglobals
+    - tagalign
+    - gosimple
+    - errname
+    - nestif
+    - dogsled
+    - inamedparam
+    - gomnd
+    - goerr113
+    # deprecated
+    - structcheck
+    - scopelint
+    - maligned
+    - varcheck
+    - ifshort
+    - nosnakecase
+    - interfacer
+    - deadcode
+    - golint
+    - exhaustivestruct
+linters-settings:
+  misspell:
+    locale: US

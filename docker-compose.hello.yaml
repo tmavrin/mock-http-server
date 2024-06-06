@@ -1,0 +1,18 @@
+version: '3.5'
+
+services:
+  mock-server:
+    image: mock-http-server:local
+    restart: always
+    environment:
+      CONFIG_PATH: /config/hello-mock.json
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./example:/config
+    networks:
+      - mock-server
+
+networks:
+  mock-server:
+    driver: bridge
