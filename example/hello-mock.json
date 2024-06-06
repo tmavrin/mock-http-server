@@ -1,0 +1,12 @@
+{
+    "handlers": [
+      {
+        "path": "/",
+        "method": "GET",
+        "response": {
+            "msg": "Hello mock server!"
+        }
+      }
+    ]
+}
+  

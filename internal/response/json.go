@@ -1,15 +1,14 @@
-package main
+package response
 
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
-
-	"log"
 )
 
-func writeJSONResponse(w http.ResponseWriter, statusCode int, data any) {
+func JSON(w http.ResponseWriter, statusCode int, data any) {
 	w.Header().Add("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(statusCode)
 
@@ -17,6 +16,7 @@ func writeJSONResponse(w http.ResponseWriter, statusCode int, data any) {
 		b, err := json.Marshal(data)
 		if err != nil {
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+
 			return
 		}
 

@@ -1,4 +1,4 @@
-package main
+package middleware
 
 import (
 	"bytes"
@@ -8,25 +8,27 @@ import (
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/tmavrin/mock-http-server/internal/response"
 )
 
-func logMiddleware(next http.Handler) http.Handler {
+func RequestLog(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
 			return
 		}
 
 		var txt json.RawMessage
+
 		err = json.Unmarshal(body, &txt)
 		if err != nil {
-			writeJSONResponse(w, http.StatusInternalServerError, err.Error())
+			response.JSON(w, http.StatusInternalServerError, err.Error())
 		}
 
 		d, err := json.Marshal(txt)
 		if err != nil {
-			writeJSONResponse(w, http.StatusInternalServerError, err.Error())
+			response.JSON(w, http.StatusInternalServerError, err.Error())
 		}
 
 		r.Body = io.NopCloser(bytes.NewReader(body))
