@@ -27,18 +27,8 @@ linters:
     - dogsled
     - inamedparam
     - gomnd
-    - goerr113
-    # deprecated
-    - structcheck
-    - scopelint
-    - maligned
-    - varcheck
-    - ifshort
-    - nosnakecase
-    - interfacer
-    - deadcode
-    - golint
-    - exhaustivestruct
+    - err113
+    - mnd
 linters-settings:
   misspell:
     locale: US
