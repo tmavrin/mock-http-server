@@ -19,6 +19,13 @@ func RequestLog(next http.Handler) http.Handler {
 			return
 		}
 
+		if len(body) == 0 {
+			r.Body = io.NopCloser(bytes.NewReader(body))
+			next.ServeHTTP(w, r)
+
+			return
+		}
+
 		var txt json.RawMessage
 
 		err = json.Unmarshal(body, &txt)
