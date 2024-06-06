@@ -16,8 +16,10 @@ import (
 func main() {
 	cfg := configPrepare()
 
+	serverPort := cmp.Or(os.Getenv("PORT"), "8080")
+
 	server := http.Server{
-		Addr:              ":8080",
+		Addr:              ":" + serverPort,
 		Handler:           mock.Router(cfg),
 		ReadHeaderTimeout: 30 * time.Second,
 	}
