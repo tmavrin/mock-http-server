@@ -2,6 +2,7 @@ package validate
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -34,14 +35,38 @@ func fieldsValidation(r *http.Request, req *config.Request) error {
 		return err
 	}
 
-	for k, v := range req.Validate {
-		if httpReq[k] == nil && !strings.Contains(v, "required") {
-			continue
-		}
+	err = validateObject(httpReq, req.Validate)
+	if err != nil {
+		return err
+	}
 
-		err = valid.Var(httpReq[k], v)
-		if err != nil {
-			return err
+	return nil
+}
+
+func validateObject(httpReq map[string]any, req map[string]any) error {
+	for k, v := range req {
+		switch v := v.(type) {
+		case string:
+			if httpReq[k] == nil && !strings.Contains(v, "required") {
+				break
+			}
+
+			err := valid.Var(httpReq[k], v)
+			if err != nil {
+				msg := err.Error()
+				msg = strings.Replace(msg, "Key: '' Error:Field validation for ''", fmt.Sprintf("Key: '%s' Error:Field validation for '%s'", k, k), 1)
+				return errors.New(msg)
+			}
+
+		case map[string]any:
+			h, ok := httpReq[k].(map[string]any)
+			if !ok {
+				return fmt.Errorf("object of Key: '%s' not present", k)
+			}
+			err := validateObject(h, v)
+			if err != nil {
+				return err
+			}
 		}
 	}
 

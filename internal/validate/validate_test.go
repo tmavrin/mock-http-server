@@ -36,7 +36,7 @@ func TestRequestBody(t *testing.T) {
 			},
 
 			config: &config.Request{
-				Validate: map[string]string{
+				Validate: map[string]any{
 					"example": "required,lowercase,min=5",
 				},
 			},
@@ -57,12 +57,12 @@ func TestRequestBody(t *testing.T) {
 			},
 
 			config: &config.Request{
-				Validate: map[string]string{
+				Validate: map[string]any{
 					"example": "required,lowercase,min=5",
 				},
 			},
 
-			expectedError: "Key: '' Error:Field validation for '' failed on the 'min' tag", // TODO: check why return empty field name
+			expectedError: "Key: 'example' Error:Field validation for 'example' failed on the 'min' tag",
 		},
 		{
 			it: "it validate request body by exact match",
@@ -96,6 +96,74 @@ func TestRequestBody(t *testing.T) {
 			},
 
 			expectedError: `request does not match expected: { "example": "mock-request-body" } , actual: { "example": "mock" }`,
+		},
+
+		{
+			it: "it processes object",
+
+			httpReq: &http.Request{
+				Body: io.NopCloser(
+					bytes.NewBuffer(
+						[]byte(`{ "example": { "mock": "value" } }`),
+					),
+				),
+			},
+
+			config: &config.Request{
+				Validate: map[string]any{
+					"example": map[string]any{
+						"mock": "required",
+					},
+				},
+			},
+		},
+
+		{
+			it: "it processes object validation",
+
+			httpReq: &http.Request{
+				Body: io.NopCloser(
+					bytes.NewBuffer(
+						[]byte(`{ "example": { "mock": null } }`),
+					),
+				),
+			},
+
+			config: &config.Request{
+				Validate: map[string]any{
+					"example": map[string]any{
+						"mock": "required",
+					},
+				},
+			},
+
+			expectedError: "Key: 'mock' Error:Field validation for 'mock' failed on the 'required' tag",
+		},
+
+		{
+			it: "it processes multi layer object validation",
+
+			httpReq: &http.Request{
+				Body: io.NopCloser(
+					bytes.NewBuffer(
+						[]byte(`{ "example": { "mock": { "mock-2": { "mock-3": null } } } }`),
+					),
+				),
+			},
+
+			config: &config.Request{
+				Validate: map[string]any{
+					"example": map[string]any{
+						"mock": map[string]any{
+							"mock-2": map[string]any{
+								"mock-3": "required",
+							},
+						},
+					},
+				},
+			},
+
+			expectedError: "Key: 'mock-3' Error:Field validation for 'mock-3' failed on the 'required' tag",
 		},
 	}
 
