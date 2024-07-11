@@ -19,22 +19,23 @@ func TestParseJSON(t *testing.T) {
 		{
 			it: "it parse config",
 
-			config: []byte(`{
-				"prepareErrorPath": "/prepare-error",
-				"handlers": [
-				  {
-					"path": "/example-path",
-					"method": "POST",
-					"response": { "info": { "success": true }, "data": "post validate request success data" },
-					"request": {
-					  "validate": {
-						"example": "required,lowercase,min=5"
-					  },
-					  "match": { "example": "mock-request-body" }
-					}
-				  }
-				]
-			  }`),
+			config: []byte(`
+				{
+					"prepareErrorPath": "/prepare-error",
+					"handlers": [
+						{
+							"path": "/example-path",
+							"method": "POST",
+							"response": { "info": { "success": true }, "data": "post validate request success data" },
+							"request": {
+								"validate": {
+									"example": "required,lowercase,min=5"
+								},
+								"match": { "example": "mock-request-body" }
+							}
+						}
+					]
+				}`),
 
 			expectedResult: &config.Config{
 				PrepareErrorPath: "/prepare-error",
@@ -44,8 +45,50 @@ func TestParseJSON(t *testing.T) {
 						Method:   config.Post,
 						Response: []byte(`{ "info": { "success": true }, "data": "post validate request success data" }`),
 						Request: &config.Request{
-							Validate: map[string]string{
+							Validate: map[string]any{
 								"example": "required,lowercase,min=5",
+							},
+							Match: []byte(`{ "example": "mock-request-body" }`),
+						},
+					},
+				},
+			},
+		},
+		{
+			it: "it parse config",
+
+			config: []byte(`
+				{
+					"prepareErrorPath": "/prepare-error",
+					"handlers": [
+						{
+							"path": "/example-path",
+							"method": "POST",
+							"response": { "info": { "success": true }, "data": "post validate request success data" },
+							"request": {
+								"validate": {
+									"example": {
+										"mock": "value"
+									}
+								},
+								"match": { "example": "mock-request-body" }
+							}
+						}
+					]
+				}`),
+
+			expectedResult: &config.Config{
+				PrepareErrorPath: "/prepare-error",
+				Handlers: []config.Handler{
+					{
+						Path:     "/example-path",
+						Method:   config.Post,
+						Response: []byte(`{ "info": { "success": true }, "data": "post validate request success data" }`),
+						Request: &config.Request{
+							Validate: map[string]any{
+								"example": map[string]any{
+									"mock": "value",
+								},
 							},
 							Match: []byte(`{ "example": "mock-request-body" }`),
 						},

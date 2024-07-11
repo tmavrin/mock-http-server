@@ -22,6 +22,6 @@ type Handler struct {
 }
 
 type Request struct {
-	Validate map[string]string `json:"validate" yaml:"validate"`
-	Match    json.RawMessage   `json:"match" yaml:"match"`
+	Validate map[string]any  `json:"validate" yaml:"validate"`
+	Match    json.RawMessage `json:"match" yaml:"match"`
 }
