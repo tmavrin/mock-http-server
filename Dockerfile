@@ -1,13 +1,15 @@
-FROM golang:1.22-alpine as builder
+FROM --platform=$BUILDPLATFORM golang:1.22-alpine as builder
 
 RUN apk update && apk add --no-cache git ca-certificates tzdata 
+
+ARG TARGETOS
+ARG TARGETARCH
 
 COPY . .
 
 RUN go mod download
 
-RUN --mount=type=cache,target=/root/.cache/go-build \
-    CGO_ENABLED=0 go build -ldflags="-w -s" -o /mock-http-server ./cmd/main.go
+RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} CGO_ENABLED=0 go build -ldflags="-w -s" -o /mock-http-server ./cmd/main.go
 
 FROM scratch AS final
 
