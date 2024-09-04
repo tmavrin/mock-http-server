@@ -54,7 +54,12 @@ func validateObject(httpReq map[string]any, req map[string]any) error {
 			err := valid.Var(httpReq[k], v)
 			if err != nil {
 				msg := err.Error()
-				msg = strings.Replace(msg, "Key: '' Error:Field validation for ''", fmt.Sprintf("Key: '%s' Error:Field validation for '%s'", k, k), 1)
+				msg = strings.Replace(msg,
+					"Key: '' Error:Field validation for ''",
+					fmt.Sprintf("Key: '%s' Error:Field validation for '%s'", k, k),
+					1,
+				)
+
 				return errors.New(msg)
 			}
 
@@ -63,6 +68,7 @@ func validateObject(httpReq map[string]any, req map[string]any) error {
 			if !ok {
 				return fmt.Errorf("object of Key: '%s' not present", k)
 			}
+
 			err := validateObject(h, v)
 			if err != nil {
 				return err
