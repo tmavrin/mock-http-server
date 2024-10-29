@@ -15,10 +15,11 @@ type Config struct {
 }
 
 type Handler struct {
-	Path     string          `json:"path" yaml:"path"`
-	Method   Method          `json:"method" yaml:"method"`
-	Response json.RawMessage `json:"response" yaml:"response"`
-	Request  *Request        `json:"request" yaml:"request"`
+	Path         string            `json:"path" yaml:"path"`
+	Method       Method            `json:"method" yaml:"method"`
+	Response     json.RawMessage   `json:"response" yaml:"response"`
+	ResponseEcho map[string]string `json:"responseEcho" yaml:"responseEcho"`
+	Request      *Request          `json:"request" yaml:"request"`
 }
 
 type Request struct {

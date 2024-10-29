@@ -2,11 +2,13 @@ package validate_test
 
 import (
 	"bytes"
+	"encoding/json"
 	"io"
 	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/tmavrin/mock-http-server/internal/config"
 	"github.com/tmavrin/mock-http-server/internal/validate"
 )
@@ -95,7 +97,7 @@ func TestRequestBody(t *testing.T) {
 				Match: []byte(`{ "example": "mock-request-body" }`),
 			},
 
-			expectedError: `request does not match expected: { "example": "mock-request-body" } , actual: { "example": "mock" }`,
+			expectedError: `request does not match expected: { "example": "mock-request-body" } , actual: {"example":"mock"}`,
 		},
 
 		{
@@ -169,7 +171,13 @@ func TestRequestBody(t *testing.T) {
 
 	for _, tc := range cases {
 		t.Run(tc.it, func(t *testing.T) {
-			err := validate.RequestBody(tc.httpReq, tc.config)
+			var httpBody map[string]any
+
+			err := json.NewDecoder(tc.httpReq.Body).Decode(&httpBody)
+
+			require.NoError(t, err)
+
+			err = validate.RequestBody(httpBody, tc.config)
 			if err != nil {
 				assert.Equal(t, tc.expectedError, err.Error())
 				return
