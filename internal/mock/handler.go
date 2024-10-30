@@ -3,7 +3,9 @@ package mock
 import (
 	"cmp"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/tmavrin/mock-http-server/internal/config"
@@ -21,11 +23,15 @@ func Handler(h config.Handler) http.Handler {
 			return
 		}
 
-		var reqBody map[string]any
+		reqBody := map[string]any{}
 
-		err := json.NewDecoder(r.Body).Decode(&reqBody)
-		if err != nil {
-			response.JSON(w, http.StatusInternalServerError, err.Error())
+		if r.Body != nil {
+			err := json.NewDecoder(r.Body).Decode(&reqBody)
+			if err != nil && !errors.Is(err, io.EOF) {
+				response.JSON(w, http.StatusInternalServerError, err.Error())
+
+				return
+			}
 		}
 
 		if h.Request != nil {
@@ -37,19 +43,54 @@ func Handler(h config.Handler) http.Handler {
 			}
 		}
 
-		responseData := make(map[string]any)
+		var responseData any
 
 		if string(h.Response) != "" {
 			err := json.Unmarshal(h.Response, &responseData)
 			if err != nil {
 				response.JSON(w, http.StatusInternalServerError, err.Error())
+
+				return
 			}
 		}
 
 		for k, v := range h.ResponseEcho {
 			requestValue := findValue(reqBody, k)
 
-			setValue(responseData, v, requestValue)
+			switch responseData.(type) {
+			case []any:
+				castArray, ok := responseData.([]any)
+				if !ok {
+					response.JSON(w, http.StatusInternalServerError, "can not cast response as array")
+
+					return
+				}
+
+				for _, item := range castArray {
+					castItem, ok := item.(map[string]any)
+					if !ok {
+						response.JSON(w, http.StatusInternalServerError, "can not cast response as object")
+
+						return
+					}
+
+					setValue(castItem, v, requestValue)
+				}
+			case map[string]any:
+				castItem, ok := responseData.(map[string]any)
+				if !ok {
+					response.JSON(w, http.StatusInternalServerError, "can not cast response as object")
+
+					return
+				}
+
+				setValue(castItem, v, requestValue)
+			default:
+				response.JSON(w, http.StatusInternalServerError, "unknown request, not an object nor array")
+
+				return
+			}
+
 		}
 
 		response.JSON(w, http.StatusOK, responseData)
