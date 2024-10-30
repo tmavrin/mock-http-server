@@ -2,7 +2,7 @@ name: lint & test
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   lint:
@@ -19,11 +19,11 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - uses: actions/setup-go@v2
-      with:
-        go-version: 1.22.3
+      - uses: actions/setup-go@v2
+        with:
+          go-version: 1.23.2
 
-    - name: Test
-      run: make test
+      - name: Test
+        run: make test

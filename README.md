@@ -61,9 +61,21 @@ you can use ENV variable `CONFIG_PATH` so override it.
 }
 ```
 
+- `prepareErrorPath` defines a path where requests will be sent to prepare the next request to return error
+- `handler` is an array of handler definitions where:
+  - `path` is URL path
+  - `method` is http method (`POST`,`GET`,`PATCH`, `PUT`, `DELETE`)
+  - `response` is a definition of response data you want the mock to return
+  - `request`:
+    - `validate` key-value of properties that you want validated defined by [go-playground/validator](https://github.com/go-playground/validator) tags
+    - `match` configures the mock to check for exact match with request
+  - `responseEcho` is a key-value set of dot notation properties you want to take from request and set in response. Example `some.property.you.want.in.response`
+
+### Port
+
 Serve port is configured by env `PORT`, but defaults to `:8080`
 
-## How to run
+# How to run
 
 ## Docker
 

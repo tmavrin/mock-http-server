@@ -1,6 +1,6 @@
 module github.com/tmavrin/mock-http-server
 
-go 1.22.3
+go 1.23.2
 
 require (
 	github.com/go-playground/validator/v10 v10.21.0

@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
-	"net/http"
 	"reflect"
 	"strings"
 
@@ -15,27 +13,20 @@ import (
 
 var valid = validator.New()
 
-func RequestBody(r *http.Request, req *config.Request) error {
+func RequestBody(httpReq map[string]any, req *config.Request) error {
 	if len(req.Validate) > 0 {
-		return fieldsValidation(r, req)
+		return fieldsValidation(httpReq, req)
 	}
 
 	if len(req.Match) > 0 {
-		return bodyMatching(r, req)
+		return bodyMatching(httpReq, req)
 	}
 
 	return nil
 }
 
-func fieldsValidation(r *http.Request, req *config.Request) error {
-	httpReq := make(map[string]any)
-
-	err := json.NewDecoder(r.Body).Decode(&httpReq)
-	if err != nil {
-		return err
-	}
-
-	err = validateObject(httpReq, req.Validate)
+func fieldsValidation(httpReq map[string]any, req *config.Request) error {
+	err := validateObject(httpReq, req.Validate)
 	if err != nil {
 		return err
 	}
@@ -79,27 +70,23 @@ func validateObject(httpReq map[string]any, req map[string]any) error {
 	return nil
 }
 
-func bodyMatching(r *http.Request, req *config.Request) error {
-	var expected, actual any
+func bodyMatching(httpReq map[string]any, req *config.Request) error {
+	var expected any
 
 	if err := json.Unmarshal([]byte(req.Match), &expected); err != nil {
 		return err
 	}
 
-	body, err := io.ReadAll(r.Body)
+	jsonBytes, err := json.Marshal(httpReq)
 	if err != nil {
 		return err
 	}
 
-	if err := json.Unmarshal(body, &actual); err != nil {
-		return err
-	}
-
-	if !reflect.DeepEqual(expected, actual) {
+	if !reflect.DeepEqual(expected, httpReq) {
 		return fmt.Errorf(
 			"request does not match expected: %s , actual: %s",
 			req.Match,
-			body,
+			string(jsonBytes),
 		)
 	}
 

@@ -5,7 +5,7 @@
       "path": "/",
       "method": "GET",
       "response": {
-          "msg": "Hello mock server!"
+        "msg": "Hello mock server!"
       }
     },
     {
@@ -22,6 +22,9 @@
         "match": {
           "example": "mock-request-body"
         }
+      },
+      "responseEcho": {
+        "example": "data.example"
       }
     }
   ]
