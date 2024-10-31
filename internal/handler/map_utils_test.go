@@ -1,4 +1,4 @@
-package mock
+package handler
 
 import (
 	"testing"
@@ -10,7 +10,7 @@ func TestFindValue(t *testing.T) {
 	cases := []struct {
 		it string
 
-		source map[string]any
+		source any
 		key    string
 
 		expectedResult any
@@ -42,6 +42,33 @@ func TestFindValue(t *testing.T) {
 				},
 			},
 			key:            "data_prop_1.data_prop_2.data_prop_3.data_prop_4.data_prop_5.data_prop_6",
+			expectedResult: "prop_value",
+		},
+		{
+			it: "find value in array",
+
+			source: []any{
+				map[string]any{},
+				map[string]any{},
+				map[string]any{
+					"data_prop_1": map[string]any{
+						"data_prop_2": map[string]any{
+							"data_prop_3": []any{
+								map[string]any{},
+								map[string]any{},
+								map[string]any{
+									"data_prop_4": map[string]any{
+										"data_prop_5": map[string]any{
+											"data_prop_6": "prop_value",
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			key:            "[2].data_prop_1.data_prop_2.data_prop_3.[2].data_prop_4.data_prop_5.data_prop_6",
 			expectedResult: "prop_value",
 		},
 		{

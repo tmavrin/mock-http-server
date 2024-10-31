@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	Path             = "./config/mock-server.json"
+	Path             = "/home/tmavrin/Documents/Repos/mock-http-server/example/mock-server.json"
 	ErrorHandlerPath = "/prepare-error"
 )
 
@@ -23,6 +23,6 @@ type Handler struct {
 }
 
 type Request struct {
-	Validate map[string]any  `json:"validate" yaml:"validate"`
+	Validate any             `json:"validate" yaml:"validate"`
 	Match    json.RawMessage `json:"match" yaml:"match"`
 }

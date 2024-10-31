@@ -167,11 +167,131 @@ func TestRequestBody(t *testing.T) {
 
 			expectedError: "Key: 'mock-3' Error:Field validation for 'mock-3' failed on the 'required' tag",
 		},
+
+		{
+			it: "it processes array validation",
+
+			httpReq: &http.Request{
+				Body: io.NopCloser(
+					bytes.NewBuffer(
+						[]byte(`[{ "example": { "mock": { "mock-2": { "mock-3": null } } } }]`),
+					),
+				),
+			},
+
+			config: &config.Request{
+				Validate: []any{
+					map[string]any{
+						"example": map[string]any{
+							"mock": map[string]any{
+								"mock-2": map[string]any{
+									"mock-3": "required",
+								},
+							},
+						},
+					},
+				},
+			},
+
+			expectedError: "Key: 'mock-3' Error:Field validation for 'mock-3' failed on the 'required' tag",
+		},
+		{
+			it: "it processes object validation with array as property",
+
+			httpReq: &http.Request{
+				Body: io.NopCloser(
+					bytes.NewBuffer([]byte(`[{"example": {"mock": [{"mock-2": {"mock-3": null}}]} }]`)),
+				),
+			},
+
+			config: &config.Request{
+				Validate: []any{
+					map[string]any{
+						"example": map[string]any{
+							"mock": []any{
+								map[string]any{
+									"mock-2": map[string]any{
+										"mock-3": "required",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+
+			expectedError: "Key: 'mock-3' Error:Field validation for 'mock-3' failed on the 'required' tag",
+		},
+		{
+			it: "it processes object validation with array as property",
+
+			httpReq: &http.Request{
+				Body: io.NopCloser(
+					bytes.NewBuffer([]byte(`[{},{"example": {"mock": [{"mock-2": {"mock-3": null}}]} }]`)),
+				),
+			},
+
+			config: &config.Request{
+				Validate: []any{
+					map[string]any{},
+					map[string]any{
+						"example": map[string]any{
+							"mock": []any{
+								map[string]any{
+									"mock-2-1": map[string]any{
+										"mock-2-3": "required",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+
+			expectedError: "Key: 'mock-2-3' Error:Field validation for 'mock-2-3' failed on the 'required' tag",
+		},
+		{
+			it: "it returns null if no validation",
+
+			httpReq: &http.Request{
+				Body: io.NopCloser(
+					bytes.NewBuffer([]byte(`[{"example": {"mock": [{"mock-2": {"mock-3": null}}]} }]`)),
+				),
+			},
+
+			config: &config.Request{},
+		},
+
+		{
+			it: "it returns type mismatch",
+
+			httpReq: &http.Request{
+				Body: io.NopCloser(
+					bytes.NewBuffer(
+						[]byte(`[{ "example": { "mock": { "mock-2": { "mock-3": null } } } }]`),
+					),
+				),
+			},
+
+			config: &config.Request{
+				Validate: map[string]any{
+					"example": map[string]any{
+						"mock": map[string]any{
+							"mock-2": map[string]any{
+								"mock-3": "required",
+							},
+						},
+					},
+				},
+			},
+
+			expectedError: "config request validation is defined as an object, but sent request is not an object",
+		},
 	}
 
 	for _, tc := range cases {
 		t.Run(tc.it, func(t *testing.T) {
-			var httpBody map[string]any
+			var httpBody any
 
 			err := json.NewDecoder(tc.httpReq.Body).Decode(&httpBody)
 

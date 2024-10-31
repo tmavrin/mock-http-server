@@ -55,7 +55,7 @@ func TestParseJSON(t *testing.T) {
 			},
 		},
 		{
-			it: "it parse config",
+			it: "it parse other config",
 
 			config: []byte(`
 				{
@@ -88,6 +88,52 @@ func TestParseJSON(t *testing.T) {
 							Validate: map[string]any{
 								"example": map[string]any{
 									"mock": "value",
+								},
+							},
+							Match: []byte(`{ "example": "mock-request-body" }`),
+						},
+					},
+				},
+			},
+		},
+		{
+			it: "it parse config with validate array",
+
+			config: []byte(`
+				{
+					"prepareErrorPath": "/prepare-error",
+					"handlers": [
+						{
+							"path": "/example-path",
+							"method": "POST",
+							"response": { "info": { "success": true }, "data": "post validate request success data" },
+							"request": {
+								"validate": [
+									{
+										"example": {
+											"mock": "value"
+										}
+									}
+								],
+								"match": { "example": "mock-request-body" }
+							}
+						}
+					]
+				}`),
+
+			expectedResult: &config.Config{
+				PrepareErrorPath: "/prepare-error",
+				Handlers: []config.Handler{
+					{
+						Path:     "/example-path",
+						Method:   config.Post,
+						Response: []byte(`{ "info": { "success": true }, "data": "post validate request success data" }`),
+						Request: &config.Request{
+							Validate: []any{
+								map[string]any{
+									"example": map[string]any{
+										"mock": "value",
+									},
 								},
 							},
 							Match: []byte(`{ "example": "mock-request-body" }`),

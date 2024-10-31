@@ -1,9 +1,11 @@
-package mock
+package handler
 
 import (
 	"cmp"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/tmavrin/mock-http-server/internal/config"
@@ -13,6 +15,7 @@ import (
 
 func Handler(h config.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// check for prepared error
 		prepError, ok := errorMap[fmt.Sprintf("%s_%s", h.Method, h.Path)]
 		if ok {
 			delete(errorMap, fmt.Sprintf("%s_%s", h.Method, h.Path))
@@ -21,11 +24,15 @@ func Handler(h config.Handler) http.Handler {
 			return
 		}
 
-		var reqBody map[string]any
+		var reqBody any
 
-		err := json.NewDecoder(r.Body).Decode(&reqBody)
-		if err != nil {
-			response.JSON(w, http.StatusInternalServerError, err.Error())
+		if r.Body != nil {
+			err := json.NewDecoder(r.Body).Decode(&reqBody)
+			if err != nil && !errors.Is(err, io.EOF) {
+				response.JSON(w, http.StatusInternalServerError, err.Error())
+
+				return
+			}
 		}
 
 		if h.Request != nil {
@@ -37,19 +44,24 @@ func Handler(h config.Handler) http.Handler {
 			}
 		}
 
-		responseData := make(map[string]any)
+		var responseData any
 
 		if string(h.Response) != "" {
 			err := json.Unmarshal(h.Response, &responseData)
 			if err != nil {
 				response.JSON(w, http.StatusInternalServerError, err.Error())
+
+				return
 			}
 		}
 
-		for k, v := range h.ResponseEcho {
-			requestValue := findValue(reqBody, k)
+		if len(h.ResponseEcho) > 0 {
+			err := setResponseEcho(h.ResponseEcho, reqBody, responseData)
+			if err != nil {
+				response.JSON(w, cmp.Or(http.StatusBadRequest, http.StatusInternalServerError), err.Error())
 
-			setValue(responseData, v, requestValue)
+				return
+			}
 		}
 
 		response.JSON(w, http.StatusOK, responseData)
