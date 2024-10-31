@@ -26,10 +26,17 @@ func Handler(h config.Handler) http.Handler {
 
 		var reqBody any
 
+		err := checkQueryParams(r, h.QueryParams)
+		if err != nil && !errors.Is(err, io.EOF) {
+			response.JSON(w, http.StatusBadRequest, err.Error())
+
+			return
+		}
+
 		if r.Body != nil {
 			err := json.NewDecoder(r.Body).Decode(&reqBody)
 			if err != nil && !errors.Is(err, io.EOF) {
-				response.JSON(w, http.StatusInternalServerError, err.Error())
+				response.JSON(w, http.StatusBadRequest, err.Error())
 
 				return
 			}

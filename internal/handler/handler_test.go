@@ -73,6 +73,60 @@ func TestHandler(t *testing.T) {
 		},
 
 		{
+			it: "validate query params",
+
+			config: config.Handler{
+				Method:   http.MethodGet,
+				Path:     "/get?test=mock-value",
+				Response: []byte(`{"info":{"success":true},"data":"get request success data"}`),
+				QueryParams: map[string]config.QueryParam{
+					"test": {
+						Required: true,
+						Value:    "mock-value",
+					},
+				},
+			},
+
+			expectedStatus: http.StatusOK,
+			expectedResult: `{"info":{"success":true},"data":"get request success data"}`,
+		},
+		{
+			it: "validate non required query params",
+
+			config: config.Handler{
+				Method:   http.MethodGet,
+				Path:     "/get",
+				Response: []byte(`{"info":{"success":true},"data":"get request success data"}`),
+				QueryParams: map[string]config.QueryParam{
+					"test": {
+						Required: false,
+						Value:    "mock-value",
+					},
+				},
+			},
+
+			expectedStatus: http.StatusOK,
+			expectedResult: `{"info":{"success":true},"data":"get request success data"}`,
+		},
+		{
+			it: "validate bad query params",
+
+			config: config.Handler{
+				Method:   http.MethodGet,
+				Path:     "/get?test=invalid-value",
+				Response: []byte(`{"info":{"success":true},"data":"get request success data"}`),
+				QueryParams: map[string]config.QueryParam{
+					"test": {
+						Required: true,
+						Value:    "mock-value",
+					},
+				},
+			},
+
+			expectedStatus: http.StatusBadRequest,
+			expectedResult: `"query param test value 'invalid-value' does not match 'mock-value'"`,
+		},
+		{
 			it: "pass null as value on echo request without sent request property",
 
 			request: map[string]any{
