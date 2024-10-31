@@ -26,6 +26,33 @@
       "responseEcho": {
         "example": "data.example"
       }
+    },
+    {
+      "path": "/array",
+      "method": "POST",
+      "response": {
+        "info": { "success": true },
+        "data": "post validate request success data"
+      },
+      "request": {
+        "validate": [
+          {},
+          {
+            "example": {
+              "mock": [
+                {
+                  "mock-2-1": {
+                    "mock-2-3": "required,lowercase,min=5"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "responseEcho": {
+        "example.mock.mock-2.mock-3": "example.mock.mock-2.mock-3"
+      }
     }
   ]
 }

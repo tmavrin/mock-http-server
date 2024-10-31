@@ -1,4 +1,4 @@
-package mock
+package handler
 
 import (
 	"cmp"
@@ -15,6 +15,7 @@ import (
 
 func Handler(h config.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// check for prepared error
 		prepError, ok := errorMap[fmt.Sprintf("%s_%s", h.Method, h.Path)]
 		if ok {
 			delete(errorMap, fmt.Sprintf("%s_%s", h.Method, h.Path))
@@ -23,7 +24,7 @@ func Handler(h config.Handler) http.Handler {
 			return
 		}
 
-		reqBody := map[string]any{}
+		var reqBody any
 
 		if r.Body != nil {
 			err := json.NewDecoder(r.Body).Decode(&reqBody)
@@ -54,43 +55,8 @@ func Handler(h config.Handler) http.Handler {
 			}
 		}
 
-		for k, v := range h.ResponseEcho {
-			requestValue := findValue(reqBody, k)
-
-			switch responseData.(type) {
-			case []any:
-				castArray, ok := responseData.([]any)
-				if !ok {
-					response.JSON(w, http.StatusInternalServerError, "can not cast response as array")
-
-					return
-				}
-
-				for _, item := range castArray {
-					castItem, ok := item.(map[string]any)
-					if !ok {
-						response.JSON(w, http.StatusInternalServerError, "can not cast response as object")
-
-						return
-					}
-
-					setValue(castItem, v, requestValue)
-				}
-			case map[string]any:
-				castItem, ok := responseData.(map[string]any)
-				if !ok {
-					response.JSON(w, http.StatusInternalServerError, "can not cast response as object")
-
-					return
-				}
-
-				setValue(castItem, v, requestValue)
-			default:
-				response.JSON(w, http.StatusInternalServerError, "unknown request, not an object nor array")
-
-				return
-			}
-
+		if len(h.ResponseEcho) > 0 {
+			setResponseEcho(h.ResponseEcho, reqBody, responseData)
 		}
 
 		response.JSON(w, http.StatusOK, responseData)

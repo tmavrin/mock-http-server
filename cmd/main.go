@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/tmavrin/mock-http-server/internal/config"
-	"github.com/tmavrin/mock-http-server/internal/mock"
+	"github.com/tmavrin/mock-http-server/internal/handler"
 )
 
 func main() {
@@ -20,7 +20,7 @@ func main() {
 
 	server := http.Server{
 		Addr:              ":" + serverPort,
-		Handler:           mock.Router(cfg),
+		Handler:           handler.Router(cfg),
 		ReadHeaderTimeout: 30 * time.Second,
 	}
 

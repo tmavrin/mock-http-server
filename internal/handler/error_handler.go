@@ -1,4 +1,4 @@
-package mock
+package handler
 
 import (
 	"encoding/json"

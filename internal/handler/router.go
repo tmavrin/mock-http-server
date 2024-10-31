@@ -1,4 +1,4 @@
-package mock
+package handler
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/tmavrin/mock-http-server/internal/config"
-	"github.com/tmavrin/mock-http-server/internal/mock/middleware"
+	"github.com/tmavrin/mock-http-server/internal/handler/middleware"
 )
 
 func Router(cfg *config.Config) *http.ServeMux {

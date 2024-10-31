@@ -1,4 +1,4 @@
-package mock_test
+package handler_test
 
 import (
 	"bytes"
@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/tmavrin/mock-http-server/internal/config"
-	"github.com/tmavrin/mock-http-server/internal/mock"
+	"github.com/tmavrin/mock-http-server/internal/handler"
 )
 
 func TestHandler(t *testing.T) {
@@ -148,7 +148,7 @@ func TestHandler(t *testing.T) {
 
 			rr := httptest.NewRecorder()
 
-			mock.Handler(tc.config).ServeHTTP(rr, req)
+			handler.Handler(tc.config).ServeHTTP(rr, req)
 
 			assert.Equal(t, tc.expectedStatus, rr.Code)
 			assert.JSONEq(t, tc.expectedResult, rr.Body.String())
