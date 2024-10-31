@@ -13,7 +13,7 @@ func fieldsValidation(httpReq any, req any) error {
 		if httpReq != nil {
 			httpReq, ok := httpReq.([]any)
 			if !ok {
-				return fmt.Errorf("config request validation is defined as array, but sent request is not array")
+				return errors.New("config request validation is defined as array, but sent request is not array")
 			}
 
 			return validateArray(httpReq, validateConfig)
@@ -25,7 +25,7 @@ func fieldsValidation(httpReq any, req any) error {
 		if httpReq != nil {
 			httpReq, ok := httpReq.([]map[string]any)
 			if !ok {
-				return fmt.Errorf("config request validation is defined as array, but sent request is not array")
+				return errors.New("config request validation is defined as array, but sent request is not array")
 			}
 
 			return validateArrayMap(httpReq, validateConfig)
@@ -37,7 +37,7 @@ func fieldsValidation(httpReq any, req any) error {
 		if httpReq != nil {
 			httpReq, ok := httpReq.(map[string]any)
 			if !ok {
-				return fmt.Errorf("config request validation is defined as an object, but sent request is not an object")
+				return errors.New("config request validation is defined as an object, but sent request is not an object")
 			}
 
 			return validateObject(httpReq, validateConfig)
@@ -69,7 +69,7 @@ func validateArray(httpReq []any, req []any) error {
 			}
 
 		default:
-			return fmt.Errorf("validation rules must be a string")
+			return errors.New("validation rules must be a string")
 		}
 	}
 
@@ -102,7 +102,7 @@ func validateObject(httpReq map[string]any, req map[string]any) error {
 			return fieldsValidation(httpReq[k], v)
 
 		default:
-			return fmt.Errorf("validation rules must be a string")
+			return errors.New("validation rules must be a string")
 		}
 	}
 

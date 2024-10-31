@@ -56,7 +56,12 @@ func Handler(h config.Handler) http.Handler {
 		}
 
 		if len(h.ResponseEcho) > 0 {
-			setResponseEcho(h.ResponseEcho, reqBody, responseData)
+			err := setResponseEcho(h.ResponseEcho, reqBody, responseData)
+			if err != nil {
+				response.JSON(w, cmp.Or(http.StatusBadRequest, http.StatusInternalServerError), err.Error())
+
+				return
+			}
 		}
 
 		response.JSON(w, http.StatusOK, responseData)

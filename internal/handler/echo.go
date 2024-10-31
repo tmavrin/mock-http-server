@@ -8,14 +8,9 @@ func setResponseEcho(config map[string]string, reqBody any, responseData any) er
 	for k, v := range config {
 		requestValue := findValue(reqBody, k)
 
-		switch responseData.(type) {
+		switch data := responseData.(type) {
 		case []any:
-			castArray, ok := responseData.([]any)
-			if !ok {
-				return errors.New("can not cast response as array")
-			}
-
-			for _, item := range castArray {
+			for _, item := range data {
 				castItem, ok := item.(map[string]any)
 				if !ok {
 					return errors.New("can not cast response as object")
@@ -24,12 +19,7 @@ func setResponseEcho(config map[string]string, reqBody any, responseData any) er
 				setValue(castItem, v, requestValue)
 			}
 		case map[string]any:
-			castItem, ok := responseData.(map[string]any)
-			if !ok {
-				return errors.New("can not cast response as object")
-			}
-
-			setValue(castItem, v, requestValue)
+			setValue(data, v, requestValue)
 		default:
 			return errors.New("unknown request, not an object nor array")
 		}
