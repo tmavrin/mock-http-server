@@ -55,6 +55,15 @@ you can use ENV variable `CONFIG_PATH` so override it.
         "match": {
           "example": "mock-request-body"
         }
+      },
+      "responseEcho": {
+        "example.mock.mock-2.mock-3": "example.mock.mock-2.mock-3"
+      },
+      "queryParams": {
+        "test": {
+          "required": false,
+          "value": "test-value"
+        }
       }
     }
   ]
@@ -69,7 +78,12 @@ you can use ENV variable `CONFIG_PATH` so override it.
   - `request`:
     - `validate` key-value of properties that you want validated defined by [go-playground/validator](https://github.com/go-playground/validator) tags
     - `match` configures the mock to check for exact match with request
-  - `responseEcho` is a key-value set of dot notation properties you want to take from request and set in response. Example `some.property.you.want.in.response`
+  - `responseEcho` is a key-value set of dot notation properties you want to take from request and set in response.
+    - Simple example: `some.property.you.want.in.response`
+    - Array example: if `[2]` for example is present, it means take the 3rd element of array. Example `some.[2].property.you.[1].want.in.response`
+  - `queryParam` is a map of query params you want to check
+    - `required` if false it will not fail when not sent
+    - `value` value to compare to when it is sent. if not equal it will fail
 
 ### Port
 
