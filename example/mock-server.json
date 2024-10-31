@@ -9,6 +9,19 @@
       }
     },
     {
+      "path": "/query",
+      "method": "GET",
+      "response": {
+        "msg": "Hello mock server!"
+      },
+      "queryParams": {
+        "test": {
+          "required": false,
+          "value": "test-value"
+        }
+      }
+    },
+    {
       "path": "/example-path",
       "method": "POST",
       "response": {
