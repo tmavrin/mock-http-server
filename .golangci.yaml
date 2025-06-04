@@ -1,35 +1,55 @@
+version: "2"
 run:
   tests: false
 linters:
-  enable-all: true
+  default: all
   disable:
-    # complexity
-    - gocognit
-    - gocyclo
     - cyclop
-    - maintidx
-    # disabled
-    - godot
     - depguard
+    - dogsled
     - dupl
-    - ireturn
-    - recvcheck
-    - varnamelen
+    - err113
+    - errname
     - exhaustruct
-    - tagliatelle
-    - wrapcheck
-    - paralleltest
     - funlen
     - gochecknoglobals
-    - tagalign
-    - gosimple
-    - errname
-    - nestif
-    - dogsled
+    - gocognit
+    - gocyclo
+    - godot
     - inamedparam
-    - gomnd
-    - err113
+    - ireturn
+    - maintidx
     - mnd
-linters-settings:
-  misspell:
-    locale: US
+    - nestif
+    - paralleltest
+    - recvcheck
+    - tagalign
+    - tagliatelle
+    - varnamelen
+    - wrapcheck
+  settings:
+    misspell:
+      locale: US
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - gofumpt
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
