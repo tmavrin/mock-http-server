@@ -17,9 +17,9 @@ func fieldsValidation(httpReq any, req any) error {
 			}
 
 			return validateArray(httpReq, validateConfig)
-		} else {
-			return validateArray(nil, validateConfig)
 		}
+
+		return validateArray(nil, validateConfig)
 
 	case []map[string]any:
 		if httpReq != nil {
@@ -29,9 +29,9 @@ func fieldsValidation(httpReq any, req any) error {
 			}
 
 			return validateArrayMap(httpReq, validateConfig)
-		} else {
-			return validateArrayMap(nil, validateConfig)
 		}
+
+		return validateArrayMap(nil, validateConfig)
 
 	case map[string]any:
 		if httpReq != nil {
@@ -41,9 +41,9 @@ func fieldsValidation(httpReq any, req any) error {
 			}
 
 			return validateObject(httpReq, validateConfig)
-		} else {
-			return validateObject(nil, validateConfig)
 		}
+
+		return validateObject(nil, validateConfig)
 	}
 
 	return nil

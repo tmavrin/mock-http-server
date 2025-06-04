@@ -71,6 +71,6 @@ func Handler(h config.Handler) http.Handler {
 			}
 		}
 
-		response.JSON(w, http.StatusOK, responseData)
+		response.JSON(w, cmp.Or(h.Status, http.StatusOK), responseData)
 	})
 }
