@@ -44,6 +44,7 @@ you can use ENV variable `CONFIG_PATH` so override it.
     {
       "path": "/example-path",
       "method": "POST",
+      "status": 201,
       "response": {
         "info": { "success": true },
         "data": "post validate request success data"
@@ -74,6 +75,7 @@ you can use ENV variable `CONFIG_PATH` so override it.
 - `handler` is an array of handler definitions where:
   - `path` is URL path
   - `method` is http method (`POST`,`GET`,`PATCH`, `PUT`, `DELETE`)
+  - `status` is status sent on successful response, if not set is defaulted to 200.
   - `response` is a definition of response data you want the mock to return
   - `request`:
     - `validate` key-value of properties that you want validated defined by [go-playground/validator](https://github.com/go-playground/validator) tags
