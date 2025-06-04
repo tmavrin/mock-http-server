@@ -46,6 +46,27 @@ func TestHandler(t *testing.T) {
 			expectedResult: `{"info":{"success":true},"data":"post validate request success data"}`,
 		},
 		{
+			it: "correct status code and response on validate and match",
+
+			request: map[string]any{"example": "mock-request-body"},
+
+			config: config.Handler{
+				Method:   http.MethodPost,
+				Path:     "/example",
+				Status:   http.StatusCreated,
+				Response: []byte(`{"info":{"success":true},"data":"post validate request success data"}`),
+				Request: &config.Request{
+					Validate: map[string]any{
+						"example": "required,lowercase,min=5",
+					},
+					Match: []byte(`{"example":"mock-request-body"}`),
+				},
+			},
+
+			expectedStatus: http.StatusCreated,
+			expectedResult: `{"info":{"success":true},"data":"post validate request success data"}`,
+		},
+		{
 			it: "validate, match and echo request",
 
 			request: map[string]any{

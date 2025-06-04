@@ -18,6 +18,7 @@ type Handler struct {
 	Path         string                `json:"path" yaml:"path"`
 	Method       Method                `json:"method" yaml:"method"`
 	Response     json.RawMessage       `json:"response" yaml:"response"`
+	Status       int                   `json:"status" yaml:"status"`
 	ResponseEcho map[string]string     `json:"responseEcho" yaml:"responseEcho"`
 	Request      *Request              `json:"request" yaml:"request"`
 	QueryParams  map[string]QueryParam `json:"queryParams" yaml:"queryParams"`
